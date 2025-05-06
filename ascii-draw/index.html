@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ASCII Art Drawer</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #d3d3d3;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.js"></script>
+</head>
+<body>
+  <script>
+    const config = {
+      type: Phaser.AUTO,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      backgroundColor: '#050505',
+      scene: {
+        preload,
+        create,
+        update
+      }
+    };
+
+    const CELL_SIZE = 16;
+    const COLUMNS = Math.floor(config.width / CELL_SIZE);
+    const ROWS = Math.floor(config.height / CELL_SIZE);
+    const CHARACTERS = ['@', '#', '*', '&', '%', '$', '+', '=', '█', '░', '▒', '▓'];
+
+    const COLORS = [
+      '#FF0000', '#FF7F00', '#FFFF00', '#00FF00',
+      '#00FFFF', '#0000FF', '#8B00FF'
+    ];
+
+    const game = new Phaser.Game(config);
+
+    let textGrid = [];
+
+    function preload() {}
+
+    function create() {
+      const scene = this;
+
+      for (let y = 0; y < ROWS; y++) {
+        textGrid[y] = [];
+        for (let x = 0; x < COLUMNS; x++) {
+          const txt = scene.add.text(x * CELL_SIZE, y * CELL_SIZE, ' ', {
+            font: '16px monospace',
+            color: '#000'
+          });
+          textGrid[y][x] = txt;
+        }
+      }
+
+      scene.input.on('pointerdown', (pointer) => {
+        drawCharacterAtPointer(scene, pointer);
+      });
+
+      scene.input.on('pointermove', (pointer) => {
+        if (pointer.isDown) {
+          drawCharacterAtPointer(scene, pointer);
+        }
+      });
+    }
+
+    function drawCharacterAtPointer(scene, pointer) {
+      const x = Math.floor(pointer.x / CELL_SIZE);
+      const y = Math.floor(pointer.y / CELL_SIZE);
+      if (x >= 0 && x < COLUMNS && y >= 0 && y < ROWS) {
+        const char = Phaser.Utils.Array.GetRandom(CHARACTERS);
+        const color = Phaser.Utils.Array.GetRandom(COLORS);
+        const cell = textGrid[y][x];
+        cell.setText(char);
+        cell.setColor(color);
+      }
+    }
+
+    function update() {}
+  </script>
+</body>
+</html>
